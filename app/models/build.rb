@@ -10,7 +10,6 @@ class Build < ApplicationRecord
     return false if ssd.blank?
     return false if gpu.blank?
     return false if hdd.blank?
-
     true
   end
 end

@@ -1,8 +1,8 @@
 class BuildsController < ApplicationController
-  before_action :authorize, only: %i[create update]
+  before_action :authorize, only: %i[create update index]
 
   # kiem tra xem da hoan thanh build cu chua
-  # Cach1: Dung SQL
+
   # def create
   #  @build = Build.where(user_id: @current_user,complete: "0")
   #   # render json: @user
@@ -15,17 +15,63 @@ class BuildsController < ApplicationController
   #   end
   # end
 
-  # Cach2: Viet function
-  def index
-    build = Build.all
-    render json: build, each_serializer: nil
+  # done
+  # def create
+  #   @build = Build.where(user_id: @current_user)
+  #                 .where(main: nil)
+  #                 .or(Build.where(cpu: nil))
+  #                 .or(Build.where(hdd: nil))
+  #                 .or(Build.where(psu: nil))
+  #                 .or(Build.where(cooler: nil))
+  #                 .or(Build.where(ssd: nil))
+  #                 .or(Build.where(ram: nil))
+  #                 .or(Build.where(gpu: nil))
+  #   if @build.count != 0
+  #     render json: { build: @build, message: 'ban can hoan thanh cong viec cu' }
+  #   else
+  #     @build = @current_user.builds.build(build_params)
+  #     @build.save
+  #     render json: @build, each_serializer: nil
+  #   end
+  #   # render json: @current_user
+  # end
+  ##############################
+  def create
+    @build = Build.where(user_id: @current_user)
+    @build.each do |b|
+      if b.check_complete == true
+        next
+      else
+        @message = 'Chua hoan thanh'
+        render json: {
+          message: 'Ban chua hoan tat build cu'
+        }
+        break
+      end
+    end
+
+    unless @message
+      @build = @current_user.builds.build(build_params)
+      @build.save
+      render json: @build, each_serializer: nil
+    end
   end
 
-  def create
-    @build = Build.where(user_id: @current_user,complete: "0")
+  # Show nhung builds da hoan thanh
+  def index
+    @build = Build.where(user_id: @current_user)
+                  .where.not(cpu: blank?)
+                  .where.not(main: blank?)
+                  .where.not(psu: blank?)
+                  .where.not(cooler: blank?)
+                  .where.not(ssd: blank?)
+                  .where.not(ram: blank?)
+                  .where.not(gpu: blank?)
+                  .where.not(hdd: blank?)
     render json: @build
   end
 
+  # Kiem tra tung build da hoan thanh chua
   def show
     @build = Build.find_by(id: params[:id])
     render json: @build.check_complete

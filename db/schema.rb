@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_30_033739) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_04_050238) do
   create_table "builds", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "cpu"
@@ -38,12 +38,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_30_033739) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "likes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "liked", default: 0
+    t.string "liketable_type", null: false
+    t.bigint "liketable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["liketable_type", "liketable_id"], name: "index_likes_on_liketable"
+    t.index ["user_id"], name: "index_likes_on_user_id"
+  end
+
   create_table "posts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "title"
     t.text "content"
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "views", default: -> { "(0)" }
   end
 
   create_table "sessions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -61,4 +73,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_30_033739) do
 
   add_foreign_key "builds", "users"
   add_foreign_key "comments", "users"
+  add_foreign_key "likes", "users"
 end

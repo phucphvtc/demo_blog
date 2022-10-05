@@ -23,11 +23,8 @@ class PostsController < ApplicationController
   def show
     # render json: @current_user.admin
     @post = Post.find(params[:id])
-    if @user == @current_user || @current_user.admin
-      render json: @post, status: :ok
-    else
-      render json: { messages: 'khong co quyen xem' }
-    end
+    @post.update(views: @post.views + 1)
+    render json: { post: @post, like: @post.likes.count, comments: @post.comments }
   end
 
   def update
@@ -56,7 +53,7 @@ class PostsController < ApplicationController
   def post_params
     params.permit(:title, :content)
   end
-  
+
   def admin_user
     authorized_user
     unless @current_user.admin?
