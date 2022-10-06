@@ -15,11 +15,12 @@ Rails.application.routes.draw do
 
   resources :posts do
     post '/like', to: 'likes#create'
-    delete '/like', to: 'likes#destroy'
+    get '/like', to: 'likes#show'
+    
   end
 
   resources :comments do
     post 'like', to: 'likes#create'
-    delete '/like', to: 'likes#destroy'
+    get '/like', to: 'likes#show'
   end
 end

@@ -23,9 +23,9 @@ class UsersController < ApplicationController
 
     # Neu khong dung ID thi khong duoc show
     @user = User.find(params[:id])
-    if user == @current_user || @current_user.admin
+    if @user == @current_user || @current_user.admin
       token = encode_token({ user_id: @user.id })
-      render json: { user:, token: }, status: :ok
+      render json: { user: @user, token: token}, status: :ok
     else
       render json: {
         message: 'Khong co quyen xem in4 nguoi khac'

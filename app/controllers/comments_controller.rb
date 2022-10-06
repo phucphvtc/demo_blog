@@ -3,7 +3,17 @@ class CommentsController < ApplicationController
   before_action :authorize, only: %i[create update destroy]
   before_action :correct_user, only: %i[edit update destroy]
 
-  def index; end
+  def index
+    @comment = Comment.all
+    render json: @comment
+  end
+
+  def show
+    @comment = Comment.find(params[:id])
+
+    render json: @comment
+  end
+
 
   def create
     # render json: @current_user

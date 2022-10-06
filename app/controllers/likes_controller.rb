@@ -1,5 +1,5 @@
 class LikesController < ApplicationController
-  before_action :find_liketable, only: :create
+  before_action :find_liketable, only: %i[create show]
   before_action :authorize, only: %i[create update destroy]
 
   # def create
@@ -22,7 +22,7 @@ class LikesController < ApplicationController
   # end
 
   def create
-    @like = @liketable.likes
+    @like = @liketable.likes.where(user_id: @current_user.id)
     if @like.count == 0
       @like = @liketable.likes.build
       @like.user_id = @current_user.id
@@ -34,6 +34,9 @@ class LikesController < ApplicationController
       @like.destroy
       render json: { message: 'Unlike' }
     end
+
+    # render json: @like
+
     #   if @liketable.likes.count == 0
     #     @like = @liketable.likes.build
     #     @like.user_id = @current_user.id
@@ -49,6 +52,11 @@ class LikesController < ApplicationController
     #     @like.destroy
     #     render json: { messages: 'unlike' }
     #   end
+  end
+
+  def show
+    @like = @liketable.likes
+    render json: {liked: @like.count}
   end
 
   private
