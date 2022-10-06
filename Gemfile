@@ -50,3 +50,4 @@ gem 'jwt'
 gem 'will_paginate', '3.3.0'
 gem "active_model_serializers" ,"~>0.10.0"
 gem 'byebug'
+gem 'mailtrap', '~>0.2.1'

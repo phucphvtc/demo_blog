@@ -1,0 +1,9 @@
+
+
+
+  <h1>Sample App</h1>
+<p>Hi <%= @user.email %>,</p>
+<p>
+Welcome to the Sample App! Click on the link below to activate your account:
+</p>
+<%= link_to "Confirm", confirm_url(token: @user.confirmation_token, email: @user.email) %>

@@ -2,19 +2,19 @@ class UsersController < ApplicationController
   before_action :authorize, only: %i[show update destroy index]
   before_action :admin_user, only: %i[index destroy]
 
-
   def index
     @user = User.all
     render json: @user
   end
 
   def create
-    user = User.new(user_params)
-    if user.save
-      token = encode_token({ user_id: user.id })
-      render json: { user:, token: }, status: :ok
+    @user = User.new(user_params)
+    if @user.save
+      @user.send_activation_email
+      token = encode_token({ user_id: @user.id })
+      render json: { user: @user, token: token}, status: :ok
     else
-      render json: user.errors.messages, status: 422
+      render json: @user.errors.messages, status: 422
     end
   end
 
@@ -22,9 +22,9 @@ class UsersController < ApplicationController
     # authorized_user
 
     # Neu khong dung ID thi khong duoc show
-    user = User.find(params[:id])
+    @user = User.find(params[:id])
     if user == @current_user || @current_user.admin
-      token = encode_token({ user_id: user.id })
+      token = encode_token({ user_id: @user.id })
       render json: { user:, token: }, status: :ok
     else
       render json: {
@@ -36,7 +36,7 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
     if @user.update(user_params)
-      render json: {user:@user, message: "update thanh cong"}, status: :ok
+      render json: { user: @user, message: 'update thanh cong' }, status: :ok
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -44,6 +44,20 @@ class UsersController < ApplicationController
 
   def destroy
     @user.destroy
+  end
+
+  # Confirm email, active account
+  def confirm
+    token = params[:token].to_s
+    @user = User.find_by(confirmation_token: token)
+    if @user.present? && @user.confirmation_sent_at + 30.days > Time.now.utc
+      @user.confirmation_token = nil
+      @user.confirmed_at = Time.now.utc
+      @user.save
+      render json: { status: 'User confirmed successfully' }, status: :ok
+    else
+      render json: { status: 'Invalid token' }, status: :not_found
+    end
   end
 
   private
@@ -60,5 +74,4 @@ class UsersController < ApplicationController
       }
     end
   end
-
 end

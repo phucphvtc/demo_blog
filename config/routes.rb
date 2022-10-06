@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   resources :builds
 
   post '/login', to: 'sessions#login'
-
+  get '/confirm', to: 'users#confirm'
   resources :posts do
     resources :comments
   end
