@@ -90,9 +90,7 @@ class BuildsController < ApplicationController
   def check
     @build = Build.where(user_id: @current_user)
     @build.each do |b|
-      if b.check_complete == false
-        render json: b
-      end
+      render json: b if b.check_complete == false
     end
   end
 
