@@ -2,7 +2,8 @@ Rails.application.routes.draw do
   resources :users
   resources :posts
   resources :builds
-
+  
+  get '/check',to: 'builds#check'
   post '/login', to: 'sessions#login'
   get '/confirm', to: 'users#confirm'
   resources :posts do

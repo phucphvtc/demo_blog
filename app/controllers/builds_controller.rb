@@ -1,5 +1,5 @@
 class BuildsController < ApplicationController
-  before_action :authorize, only: %i[create update index]
+  before_action :authorize, only: %i[create update index check]
 
   # kiem tra xem da hoan thanh build cu chua
 
@@ -83,6 +83,17 @@ class BuildsController < ApplicationController
       render json: { build: @build, message: 'cap nhat thanh cong' }
     else
       render json: { build: @build.errors.messages, message: 'cap nhat that bai' }
+    end
+  end
+
+  def check
+    @build = Build.where(user_id: @current_user)
+    @build.each do |b|
+      if b.check_complete == false
+        render json: b
+      else
+        next
+      end
     end
   end
 
