@@ -86,13 +86,12 @@ class BuildsController < ApplicationController
     end
   end
 
+  # Kiem tra Build chua hoan thanh
   def check
     @build = Build.where(user_id: @current_user)
     @build.each do |b|
       if b.check_complete == false
         render json: b
-      else
-        next
       end
     end
   end
